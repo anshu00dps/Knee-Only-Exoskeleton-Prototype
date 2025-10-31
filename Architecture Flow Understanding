@@ -1,0 +1,183 @@
+Architecture Flow Understanding
+
+1. Waist Actuator Pack
+
+Function:
+Generates torque that drives knee motion via Bowden cables.
+
+Technology Used:
+
+Actuators:
+
+2 × BLDC motors (Brushless DC) — lightweight, high-efficiency torque generation.
+
+Example: T-Motor MN series or Maxon EC-i series.
+
+Series Elastic Actuator (SEA):
+
+Adds compliance (spring + sensor combo) for smoother force control.
+
+Helps prevent joint overloading.
+
+Motor Drivers:
+
+Compact FOC (Field-Oriented Control) drivers like ODrive, VESC, or custom STM32-based boards.
+
+Communication Interface:
+
+CAN, UART, or RS485 to send/receive control commands from MCU.
+
+Software/Control:
+
+Closed-loop torque control using motor current feedback.
+
+Firmware: C/C++ using STM32CubeIDE or PlatformIO.
+
+2. Bowden Cables
+
+Function:
+Transfers torque mechanically from waist actuators to the knee joint while allowing flexible movement.
+
+Technology Used:
+
+Material: Steel wire inside a low-friction PTFE or nylon sleeve.
+
+Integration: Custom 3D-printed or machined terminations at both ends.
+
+Simulation:
+
+OpenSim for modeling cable dynamics.
+
+MATLAB Simscape Multibody to simulate cable stretch and response.
+
+3. Knee Joint (Left & Right)
+
+Function:
+Receives torque from Bowden cables → assists knee extension/flexion.
+
+Technology Used:
+
+Mechanical Frame:
+
+3D-printed (PLA/ABS) or aluminum hinge joint structure.
+
+Simulation:
+
+OpenSim knee model to simulate torque vs. joint angle behavior.
+
+MATLAB/Simulink for real-time torque tracking and gait simulation.
+
+Sensors attached:
+
+Rotary encoder, load cell, and IMU (for closed-loop control).
+
+4. Sensors Block
+🌀 Rotary Encoder
+
+Purpose: Measures the angular position of the knee joint.
+
+Technology:
+
+Magnetic absolute encoder (e.g., AS5600, AS5048A).
+
+Resolution: 12–14-bit.
+
+Interface: SPI or I²C → connected to MCU.
+
+⚖️ Inline Load Cell
+
+Purpose: Measures tension in Bowden cable or torque at joint.
+
+Technology:
+
+Miniature S-type or inline strain gauge load cell (e.g., CZL635 or TAL220).
+
+Signal Amplifier: HX711 or INA122.
+
+Interface: Analog → ADC of MCU.
+
+🧭 IMU (Thigh/Shank)
+
+Purpose: Captures thigh and shank orientation, angular velocity, and acceleration.
+
+Technology:
+
+9-DOF IMU (e.g., MPU-9250, BNO085, or LSM9DS1).
+
+Interface: I²C/SPI → MCU.
+
+Software:
+
+Madgwick / Mahony filters for orientation estimation.
+
+Python visualization (Matplotlib) or MATLAB for sensor fusion tests.
+
+🦶 Foot FSR Sensor
+
+Purpose: Detects ground contact (stance vs. swing phase).
+
+Technology:
+
+Force-Sensitive Resistor (FSR402) or custom pressure insole sensor.
+
+Interface: Analog input → MCU.
+
+Usage: Used for gait phase detection.
+
+5. Controller (MCU + Motor Drivers)
+
+Function:
+Central brain controlling actuators based on sensor feedback.
+
+Technology Used:
+
+MCU:
+
+STM32H7 (high-performance ARM Cortex-M7)
+
+Alternatives: ESP32 (Wi-Fi testing), or Teensy 4.1.
+
+Motor Control:
+
+FOC algorithm (in C) controlling BLDC torque output.
+
+Real-Time OS (optional):
+
+FreeRTOS for task scheduling (sensor reading, control loop, communication).
+
+Programming:
+
+STM32CubeIDE (C) or Arduino IDE (C++) for quick testing.
+
+Communication:
+
+CAN bus or UART to motor drivers.
+
+Bluetooth/Wi-Fi module for data logging and remote control (optional).
+
+Software Tools:
+
+MATLAB/Simulink for controller simulation.
+
+Python + PySerial for serial data visualization.
+
+OpenSim for validating control performance with biomechanical models.
+
+6. Closed-Loop Feedback Path
+
+Function:
+Ensures precise torque control and adaptive movement.
+
+Technology Used:
+
+Feedback Loops:
+
+Encoder Feedback: Position/angle loop.
+
+Load Cell Feedback: Torque loop.
+
+IMU Feedback: Balance/orientation loop.
+
+Control Algorithms:
+
+PID, Impedance Control, or Admittance Control (tuned in MATLAB).
